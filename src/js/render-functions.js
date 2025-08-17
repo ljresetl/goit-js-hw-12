@@ -2,19 +2,19 @@
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-// Селектори для елементів
+// Селектори
 const galleryContainer = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
 const loadMoreBtn = document.querySelector(".load-more");
 
-// Екземпляр SimpleLightbox для галереї
+// Екземпляр SimpleLightbox
 const lightbox = new SimpleLightbox(".gallery a", {
   captionsData: "alt",
   captionDelay: 250,
 });
 
 /**
- * Створює HTML-розмітку для галереї та додає у контейнер
+ * Додає зображення у галерею
  * @param {Array} images - Масив об'єктів зображень
  */
 export function createGallery(images) {
@@ -35,7 +35,7 @@ export function createGallery(images) {
 }
 
 /**
- * Очищає вміст галереї
+ * Очищає галерею
  */
 export function clearGallery() {
   galleryContainer.innerHTML = "";
@@ -55,26 +55,24 @@ export function hideLoader() {
   loader.classList.remove("visible");
 }
 
-/**
- * Показує кнопку "Load more"
- */
+
+// Показує кнопку Load More
 export function showLoadMoreButton() {
-  loadMoreBtn.classList.add("visible");
+  loadMoreBtn.classList.remove("hidden");
 }
 
-/**
- * Прибирає кнопку "Load more"
- */
+// Прибирає кнопку Load More
 export function hideLoadMoreButton() {
-  loadMoreBtn.classList.remove("visible");
+  loadMoreBtn.classList.add("hidden");
 }
+
 
 
 // Пояснення:
 
 // galleryContainer – контейнер, куди додаємо HTML зображень.
 
-// loader – елемент лоадера, якому додаємо/прибираємо клас visible.
+// loader – елемент лоадера, якому додаємо/прибираємо клас hidden.
 
 // loadMoreBtn – кнопка “Load more”.
 

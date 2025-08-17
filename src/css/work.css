@@ -57,6 +57,10 @@
   padding: 10px;
 }
 
+.hidden {
+  display: none;
+}
+
 .button:hover,
 .button:focus,
 .load-more-button:hover,
