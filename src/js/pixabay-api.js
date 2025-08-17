@@ -29,15 +29,9 @@ export async function getImagesByQuery(query, page = 1, perPage = 15) {
 // Пояснення:
 
 // BASE_URL – базова адреса API Pixabay.
-
 // API_KEY – мій особистий ключ.
-
 // getImagesByQuery(query, page) – асинхронна функція, яка:
-
 // формує URL з параметрами пошуку;
-
 // робить fetch запит;
-
 // перевіряє, чи відповів сервер успішно;
-
 // повертає result (включає hits, total, totalHits).
