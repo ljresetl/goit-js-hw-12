@@ -67,17 +67,8 @@ export function hideLoadMoreButton() {
 }
 
 
-
-// Пояснення:
-
-// galleryContainer – контейнер, куди додаємо HTML зображень.
-
-// loader – елемент лоадера, якому додаємо/прибираємо клас hidden.
-
-// loadMoreBtn – кнопка “Load more”.
-
-// lightbox.refresh() – оновлює SimpleLightbox після додавання нових зображень.
-
-// createGallery(images) – приймає масив зображень (наприклад, з Pixabay API) і додає розмітку.
-
-// Важливо, щоб у CSS для .loader.visible та .load-more.visible були стилі для показу/приховування елементів.
+// Файл для роботи з галереєю:
+// - createGallery(images) — додає зображення у галерею і оновлює SimpleLightbox
+// - clearGallery() — очищає галерею
+// - showLoader() / hideLoader() — показує/ховає індикатор завантаження
+// - showLoadMoreButton() / hideLoadMoreButton() — показує або ховає кнопку "Load More" 
