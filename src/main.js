@@ -107,3 +107,13 @@ loadMoreBtn.addEventListener('click', async () => {
     hideLoader();
   }
 });
+
+import axios from 'axios';
+
+axios.get('https://pixabay.com/api/?key=51734453-5d46674fc0c6d7944706aca6e&q=cat&image_type=photo&per_page=3')
+  .then(response => {
+    console.log('Axios працює:', response.data);
+  })
+  .catch(error => {
+    console.error('Помилка Axios:', error);
+  });
