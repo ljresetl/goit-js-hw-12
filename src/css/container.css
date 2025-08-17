@@ -1,9 +1,23 @@
 .container {
   min-width: 320px;
-  max-width: 1200px;
+  max-width: 767px;
   margin: 0 auto;
   padding: 0 16px;
 }
 section {
   padding: 100px 0;
+}
+
+@media (min-width: 768px) {
+  .container {
+    min-width: 768px;
+    max-width: 1279px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    min-width: 1280px;
+    max-width: 1400px;
+  }
 }

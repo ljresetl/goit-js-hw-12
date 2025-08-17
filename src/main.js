@@ -1,67 +1,109 @@
-'use strict';
-// Вмикаємо строгий режим JavaScript для кращої безпеки та виявлення помилок.
-
-import iziToast from 'izitoast';
-// Імпортуємо бібліотеку iziToast для показу повідомлень (тостів).
-
-import 'izitoast/dist/css/iziToast.min.css';
-// Імпортуємо стилі iziToast для коректного відображення повідомлень.
-
+// import './css/styles.css'; // <- замість <link> в HTML
+import { getImagesByQuery } from './js/pixabay-api.js';
 import {
   createGallery,
   clearGallery,
   showLoader,
   hideLoader,
+  showLoadMoreButton,
+  hideLoadMoreButton
 } from './js/render-functions.js';
-// Імпортуємо функції для роботи з UI: створення галереї, очищення, показ та приховування лоадера.
 
-import getImagesByQuery from './js/pixabay-api';
-// Імпортуємо функцію для отримання зображень з API за пошуковим запитом.
+// Селектори
+const searchForm = document.querySelector('.form');
+const loadMoreBtn = document.querySelector('.load-more');
+const loader = document.querySelector('.loader');
 
-const form = document.querySelector('.form');
-// Знаходимо в DOM форму пошуку за класом .form і зберігаємо у змінну.
+// Стан додатка
+let query = '';
+let page = 1;
+const perPage = 15; // фіксована кількість зображень
+let totalHits = 0;
 
-form.addEventListener('submit', event => {
-// Додаємо слухача події на відправку форми.
-
-  event.preventDefault();
-  // Відміняємо стандартну поведінку форми (щоб сторінка не перезавантажувалась).
-
-  clearGallery();
-  // Очищаємо галерею від попередніх результатів пошуку.
-
+// Функція пошуку зображень
+async function searchImages(resetPage = false) {
+  if (resetPage) page = 1;
   showLoader();
-  // Показуємо індикатор завантаження, щоб користувач бачив, що триває запит.
+  hideLoadMoreButton();
 
-  const query = document.querySelector('[name="search-text"]').value.trim();
-  // Отримуємо значення текстового поля форми (пошуковий запит),
-  // видаляємо зайві пробіли по краях.
+  try {
+    const data = await getImagesByQuery(query, page, perPage);
 
-  const perPage = document.querySelector('[name="per-page"]').value;
-  // Отримуємо значення поля, яке вказує скільки карток показувати на сторінці.
-
-  getImagesByQuery(query, perPage)
-  // Викликаємо функцію для отримання зображень з API, передаючи пошуковий рядок і кількість результатів.
-
-    .then(hits => {
-      createGallery(hits);
-      // Якщо запит успішний, створюємо галерею з отриманих даних (масиву зображень).
-    })
-
-    .catch(error => {
-      iziToast.error({
-        title: 'Error',
-        message: `An error occurred: ${error.message}`,
-        position: 'topRight',
-      });
-      // Якщо сталася помилка під час запиту, показуємо повідомлення з текстом помилки.
-    })
-
-    .finally(() => {
+    if (data.hits.length === 0) {
+      iziToast.error({ title: 'Error', message: 'No images found. Try another query.' });
       hideLoader();
-      // У будь-якому випадку, після завершення запиту (успішного чи з помилкою) ховаємо індикатор завантаження.
+      return;
+    }
 
-      form.reset();
-      // Скидаємо форму (очищуємо поля введення).
-    });
+    totalHits = data.totalHits;
+
+    if (page === 1) clearGallery(); // Очищуємо галерею при новому пошуку
+    createGallery(data.hits);
+
+    // Показуємо кнопку Load More, якщо ще є зображення
+    if (totalHits > page * perPage) {
+      showLoadMoreButton();
+    } else {
+      hideLoadMoreButton();
+      iziToast.info({ title: 'Info', message: "We're sorry, but you've reached the end of search results." });
+    }
+
+    // Повідомлення про успішний пошук
+    if (page === 1) {
+      iziToast.success({ title: 'Success', message: `Found ${totalHits} images.` });
+    }
+
+  } catch (error) {
+    console.error(error);
+    iziToast.error({ title: 'Error', message: 'Something went wrong. Try again later.' });
+  } finally {
+    hideLoader();
+  }
+}
+
+// Обробник сабміту форми
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  query = e.currentTarget.elements['search-text'].value.trim();
+  if (!query) {
+    iziToast.warning({ title: 'Warning', message: 'Please enter a search query!' });
+    return;
+  }
+  await searchImages(true);
+});
+
+// Обробник кнопки Load More
+loadMoreBtn.addEventListener('click', async () => {
+  page += 1;
+  showLoader();
+  hideLoadMoreButton();
+
+  try {
+    const data = await getImagesByQuery(query, page, perPage);
+    createGallery(data.hits);
+
+    // Плавне прокручування на 2 висоти першої карточки
+    const gallery = document.querySelector('.gallery');
+    if (gallery.firstElementChild) {
+      const { height: cardHeight } = gallery.firstElementChild.getBoundingClientRect();
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+    }
+
+    // Показуємо або ховаємо кнопку Load More
+    if (totalHits > page * perPage) {
+      showLoadMoreButton();
+    } else {
+      hideLoadMoreButton();
+      iziToast.info({ title: 'Info', message: "We're sorry, but you've reached the end of search results." });
+    }
+
+  } catch (error) {
+    console.error(error);
+    iziToast.error({ title: 'Error', message: 'Something went wrong. Try again later.' });
+  } finally {
+    hideLoader();
+  }
 });

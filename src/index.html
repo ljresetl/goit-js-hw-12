@@ -2,31 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="data:,">
+    <link rel="icon" href="data:," />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>goit-js-hw-11</title>
+    <title>goit-js-hw-12</title>
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
     <main>
       <section>
-        <div class="container">
+        <div class="container container-vse">
           <form class="form">
             <label>
-              <input type="text" name="search-text" placeholder="Search images..." required>
+              <input
+                type="text"
+                class="form-input"
+                name="search-text"
+                placeholder="Search images..."
+                required
+              />
             </label>
-            <button class="button" type="submit">Search</button>
-            <select name="per-page" id="per-page">
-              <option value="33">33</option>
-              <option value="6">6</option>
-              <option value="9">9</option>
-              <option value="12">12</option>
-            </select>
+            <button class="button" type="submit">Search..</button>
           </form>
           <span class="loader hidden"></span>
           <ul class="gallery"></ul>
+          <button class="load-more">Load More</button>
+        </div>
       </section>
     </main>
+    <!-- iziToast -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
     <script type="module" src="./main.js"></script>
   </body>
 </html>

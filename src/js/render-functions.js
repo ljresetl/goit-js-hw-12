@@ -1,110 +1,85 @@
-'use strict';
-// Вмикаємо строгий режим JavaScript для більш суворої перевірки помилок.
+// render-functions.js
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
-import SimpleLightbox from 'simplelightbox';
-// Імпортуємо бібліотеку SimpleLightbox для створення галереї з модальним переглядом зображень.
+// Селектори для елементів
+const galleryContainer = document.querySelector(".gallery");
+const loader = document.querySelector(".loader");
+const loadMoreBtn = document.querySelector(".load-more");
 
-import 'simplelightbox/dist/simple-lightbox.min.css';
-// Імпортуємо стилі SimpleLightbox, щоб галерея мала коректний вигляд.
+// Екземпляр SimpleLightbox для галереї
+const lightbox = new SimpleLightbox(".gallery a", {
+  captionsData: "alt",
+  captionDelay: 250,
+});
 
+/**
+ * Створює HTML-розмітку для галереї та додає у контейнер
+ * @param {Array} images - Масив об'єктів зображень
+ */
 export function createGallery(images) {
-// Експортуємо функцію createGallery, яка приймає масив об’єктів images і створює HTML-розмітку галереї.
-
-  const gallery = document.querySelector('.gallery');
-  // Знаходимо DOM-елемент контейнера галереї за класом .gallery.
-
-  const galleryMarkup = images
-  // Створюємо HTML-розмітку для усіх зображень, перебираючи масив images методом map.
-
+  const markup = images
     .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) => {
-        // Деструктуруємо кожен об'єкт зображення, щоб отримати потрібні властивості.
-
-        return `
-          <li class="gallery-item">
-            <a class="gallery-link" href="${largeImageURL}">
-              <img
-                class="gallery-image" width="360" height="200"
-                src="${webformatURL}"
-                alt="${tags}"
-              />
-            </a>
-            <div class="info-card">
-              <p class="info-item">
-                <b>Likes</b> ${likes}
-              </p>
-              <p class="info-item">
-                <b>Views</b> ${views}
-              </p>
-              <p class="info-item">
-                <b>Comments</b> ${comments}
-              </p>
-              <p class="info-item">
-                <b>Downloads</b> ${downloads}
-              </p>
-          </li>`;
-        // Повертаємо рядок HTML-коду для однієї картки зображення:
-        // - з посиланням на велике зображення (для SimpleLightbox),
-        // - картинкою з атрибутом alt,
-        // - інформацією про лайки, перегляди, коментарі і завантаження.
-      }
+      (img) => `
+    <a href="${img.largeImageURL}">
+      <img src="${img.webformatURL}" alt="${img.tags}" loading="lazy" />
+    </a>
+  `
     )
-    .join('');
-    // Обʼєднуємо усі рядки у один великий рядок HTML.
+    .join("");
 
-  gallery.insertAdjacentHTML('beforeend', galleryMarkup);
-  // Вставляємо створену розмітку у контейнер галереї (додаємо в кінець).
+  galleryContainer.insertAdjacentHTML("beforeend", markup);
 
-  new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  }).refresh();
-  // Ініціалізуємо SimpleLightbox на посиланнях галереї з налаштуваннями:
-  // - captionsData: 'alt' — підпис до зображення береться з атрибута alt,
-  // - captionDelay: 250 — затримка появи підпису 250 мс,
-  // Викликаємо refresh(), щоб SimpleLightbox оновився з новими елементами галереї.
+  // Оновлюємо SimpleLightbox після додавання нових елементів
+  lightbox.refresh();
 }
 
+/**
+ * Очищає вміст галереї
+ */
 export function clearGallery() {
-  // Експортуємо функцію clearGallery, яка очищає вміст галереї.
-
-  const gallery = document.querySelector('.gallery');
-  // Знаходимо контейнер галереї.
-
-  if (gallery) {
-    gallery.innerHTML = '';
-    // Якщо контейнер існує — очищаємо його вміст, видаляючи всі картки.
-  }
+  galleryContainer.innerHTML = "";
 }
 
+/**
+ * Показує лоадер
+ */
 export function showLoader() {
-  // Експортуємо функцію showLoader, яка показує індикатор завантаження.
-
-  const loader = document.querySelector('.loader');
-  // Знаходимо елемент лоадера за класом .loader.
-
-  if (loader) {
-    loader.classList.remove('hidden');
-    // Якщо елемент існує — видаляємо клас 'hidden', щоб показати лоадер.
-  }
+  loader.classList.add("visible");
 }
 
+/**
+ * Прибирає лоадер
+ */
 export function hideLoader() {
-  // Експортуємо функцію hideLoader, яка ховає індикатор завантаження.
-
-  const loader = document.querySelector('.loader');
-  // Знаходимо елемент лоадера.
-
-  if (loader) {
-    loader.classList.add('hidden');
-    // Якщо існує — додаємо клас 'hidden', щоб приховати лоадер.
-  }
+  loader.classList.remove("visible");
 }
+
+/**
+ * Показує кнопку "Load more"
+ */
+export function showLoadMoreButton() {
+  loadMoreBtn.classList.add("visible");
+}
+
+/**
+ * Прибирає кнопку "Load more"
+ */
+export function hideLoadMoreButton() {
+  loadMoreBtn.classList.remove("visible");
+}
+
+
+// Пояснення:
+
+// galleryContainer – контейнер, куди додаємо HTML зображень.
+
+// loader – елемент лоадера, якому додаємо/прибираємо клас visible.
+
+// loadMoreBtn – кнопка “Load more”.
+
+// lightbox.refresh() – оновлює SimpleLightbox після додавання нових зображень.
+
+// createGallery(images) – приймає масив зображень (наприклад, з Pixabay API) і додає розмітку.
+
+// Важливо, щоб у CSS для .loader.visible та .load-more.visible були стилі для показу/приховування елементів.
