@@ -1,4 +1,4 @@
-// import './css/styles.css'; // <- замість <link> в HTML
+
 import { getImagesByQuery } from './js/pixabay-api.js';
 import {
   createGallery,
@@ -8,6 +8,10 @@ import {
   showLoadMoreButton,
   hideLoadMoreButton
 } from './js/render-functions.js';
+
+// Імпорт iziToast через збірку
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 // Селектори
 const searchForm = document.querySelector('.form');
@@ -117,3 +121,20 @@ axios.get('https://pixabay.com/api/?key=51734453-5d46674fc0c6d7944706aca6e&q=cat
   .catch(error => {
     console.error('Помилка Axios:', error);
   });
+
+
+// Перевірка спінера
+const spinner = document.querySelector('.loader');
+if (spinner) {
+  console.log('Spinner працює ✅');
+} else {
+  console.log('Spinner не знайдено ❌');
+}
+
+// Перевірка iziToast
+try {
+  iziToast.success({ title: 'Test', message: 'iziToast працює (консольно тест) 👍', timeout: 1 });
+  console.log('iziToast підключено ✅');
+} catch (error) {
+  console.log('iziToast не підключено ❌', error);
+}
