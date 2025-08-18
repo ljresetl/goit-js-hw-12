@@ -81,11 +81,9 @@
   gap: 8px;
   width: auto;
   height: auto;
+  border: 2px solid #333;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
-/* .photo-card-img {
-  border-radius: 8px;
-} */
 
 .info {
   display: flex;
