@@ -1,5 +1,7 @@
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '51734453-5d46674fc0c6d7944706aca6e';
+import axios from 'axios'; // Імпортуємо бібліотеку axios для HTTP-запитів
+
+const BASE_URL = 'https://pixabay.com/api/'; // Базова URL-адреса API Pixabay
+const API_KEY = '51734453-5d46674fc0c6d7944706aca6e'; // особистий ключ API
 
 /**
  * Виконує запит до Pixabay API та повертає об'єкт з результатами.
@@ -10,28 +12,21 @@ const API_KEY = '51734453-5d46674fc0c6d7944706aca6e';
  */
 export async function getImagesByQuery(query, page = 1, perPage = 15) {
   try {
-    const url = `${BASE_URL}?key=${API_KEY}&q=${encodeURIComponent(query)}&image_type=photo&page=${page}&per_page=${perPage}`;
-    const response = await fetch(url);
+    const response = await axios.get(BASE_URL, { // Виконуємо GET-запит через axios
+      params: {
+        key: API_KEY,             // Обов'язковий ключ API
+        q: query,                 // Пошуковий запит (наприклад, 'cats')
+        image_type: 'photo',      // Тип зображення (тут фото)
+        orientation: 'horizontal',// Додатковий параметр: горизонтальні картинки
+        safesearch: true,         // Додатковий параметр: безпечний пошук
+        page: page,               // Номер сторінки пагінації
+        per_page: perPage,        // Кількість картинок на сторінку
+      },
+    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result; // включає hits, total, totalHits
+    return response.data; // Повертаємо дані: { hits, total, totalHits }
   } catch (error) {
-    console.error('Error fetching images:', error);
-    throw error;
+    console.error('Error fetching images:', error); // Лог помилки у консолі
+    throw error; // Проброс помилки далі, щоб можна було обробити її у UI
   }
 }
-
-
-// Пояснення:
-
-// BASE_URL – базова адреса API Pixabay.
-// API_KEY – мій особистий ключ.
-// getImagesByQuery(query, page) – асинхронна функція, яка:
-// формує URL з параметрами пошуку;
-// робить fetch запит;
-// перевіряє, чи відповів сервер успішно;
-// повертає result (включає hits, total, totalHits).
