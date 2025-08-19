@@ -2,22 +2,27 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
 // Селектори DOM
-const galleryContainer = document.querySelector(".gallery"); // Контейнер для карток галереї
-const loader = document.querySelector(".loader");           // Індикатор завантаження
-const loadMoreBtn = document.querySelector(".load-more");   // Кнопка "Load More"
+const galleryContainer = document.querySelector(".gallery");
+const loader = document.querySelector(".loader");
+const loadMoreBtn = document.querySelector(".load-more");
 
 // Ініціалізація SimpleLightbox
 const lightbox = new SimpleLightbox(".gallery a", {
-  captionsData: "alt", // Беремо підпис з атрибута alt зображення
-  captionDelay: 250,   // Затримка перед появою підпису
+  captionsData: "alt",
+  captionDelay: 250,
 });
+
+// Змінні для пагінації
+let currentPage = 1;
+const perPage = 12;
+
+// ------------------- Утиліти -------------------
 
 /**
  * Додає зображення у галерею
- * @param {Array} images - Масив об'єктів зображень
+ * @param {Array} images
  */
 export function createGallery(images) {
-  // Генеруємо HTML для кожної картинки
   const markup = images
     .map(
       (img) => `
@@ -34,31 +39,28 @@ export function createGallery(images) {
     </a>
   `
     )
-    .join(""); // Обʼєднуємо всі картки в один рядок
+    .join("");
 
-  // Вставляємо згенеровану розмітку у контейнер галереї
   galleryContainer.insertAdjacentHTML("beforeend", markup);
-
-  // Оновлюємо SimpleLightbox після додавання нових елементів
   lightbox.refresh();
 }
 
 /**
- * Очищає галерею (видаляє всі елементи)
+ * Очищає галерею
  */
 export function clearGallery() {
   galleryContainer.innerHTML = "";
 }
 
 /**
- * Показує індикатор завантаження
+ * Показує спінер
  */
 export function showLoader() {
   loader.classList.add("visible");
 }
 
 /**
- * Ховає індикатор завантаження
+ * Ховає спінер
  */
 export function hideLoader() {
   loader.classList.remove("visible");
@@ -77,3 +79,65 @@ export function showLoadMoreButton() {
 export function hideLoadMoreButton() {
   loadMoreBtn.classList.add("hidden");
 }
+
+/**
+ * Затримка у мілісекундах
+ * @param {number} ms
+ */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ------------------- Логіка завантаження -------------------
+
+async function fetchImages(page = 1) {
+  showLoader();
+  hideLoadMoreButton();
+
+  try {
+    // Робимо запит до API
+    const response = await fetch(
+      `https://pixabay.com/api/?key=51734453-5d46674fc0c6d7944706aca6e&q=flowers&page=${page}&per_page=${perPage}`
+    );
+    const data = await response.json();
+
+    // Мінімальна затримка 5 секунд для спінера
+    await sleep(5000);
+
+    return data.hits;
+  } catch (error) {
+    console.error(error);
+    return [];
+  } finally {
+    hideLoader();
+  }
+}
+
+async function initGallery() {
+  clearGallery();
+  currentPage = 1;
+  const images = await fetchImages(currentPage);
+  createGallery(images);
+
+  if (images.length === perPage) {
+    showLoadMoreButton();
+  }
+}
+
+async function loadMore() {
+  currentPage += 1;
+  const images = await fetchImages(currentPage);
+  createGallery(images);
+
+  if (images.length < perPage) {
+    hideLoadMoreButton();
+  } else {
+    showLoadMoreButton();
+  }
+}
+
+// Події
+loadMoreBtn.addEventListener("click", loadMore);
+
+// Запуск
+initGallery();

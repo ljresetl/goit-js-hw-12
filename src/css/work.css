@@ -93,15 +93,20 @@
 }
 
 /* спінер початок */
-/* Основні стилі для loader */
+
 .loader {
+  display: none;
   width: 50px;
   height: 50px;
-  border: 5px solid rgba(0, 0, 0, 0.1); /* світлий контур */
-  border-top-color: #3498db; /* колір обертової частини */
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #3498db;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 20px auto; /* центрування */
+  margin: 20px auto;
+}
+
+/* Видимий стан */
+.loader.visible {
   display: block;
 }
 
@@ -112,10 +117,6 @@
   }
 }
 
-/* Приховування loader */
-.hidden {
-  display: none;
-}
 /* спінер кінець */
 
 @media (min-width: 768px) {
