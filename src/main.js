@@ -1,4 +1,3 @@
-
 import { getImagesByQuery } from './js/pixabay-api.js';
 import {
   createGallery,
@@ -16,7 +15,6 @@ import 'izitoast/dist/css/iziToast.min.css';
 // Селектори
 const searchForm = document.querySelector('.form');
 const loadMoreBtn = document.querySelector('.load-more');
-const loader = document.querySelector('.loader');
 
 // Стан додатка
 let query = '';
@@ -26,7 +24,11 @@ let totalHits = 0;
 
 // Функція пошуку зображень
 async function searchImages(resetPage = false) {
-  if (resetPage) page = 1;
+  if (resetPage) {
+    page = 1;
+    clearGallery(); // ✅ очищаємо галерею безпосередньо перед API-запитом
+  }
+
   showLoader();
   hideLoadMoreButton();
 
@@ -41,7 +43,6 @@ async function searchImages(resetPage = false) {
 
     totalHits = data.totalHits;
 
-    if (page === 1) clearGallery(); // Очищуємо галерею при новому пошуку
     createGallery(data.hits);
 
     // Показуємо кнопку Load More, якщо ще є зображення
@@ -69,11 +70,13 @@ async function searchImages(resetPage = false) {
 searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   query = e.currentTarget.elements['search-text'].value.trim();
+
   if (!query) {
     iziToast.warning({ title: 'Warning', message: 'Please enter a search query!' });
     return;
   }
-  await searchImages(true);
+
+  await searchImages(true); // ✅ очищення тепер всередині searchImages
 });
 
 // Обробник кнопки Load More
@@ -111,30 +114,3 @@ loadMoreBtn.addEventListener('click', async () => {
     hideLoader();
   }
 });
-
-import axios from 'axios';
-
-axios.get('https://pixabay.com/api/?key=51734453-5d46674fc0c6d7944706aca6e&q=cat&image_type=photo&per_page=3')
-  .then(response => {
-    console.log('Axios працює:', response.data);
-  })
-  .catch(error => {
-    console.error('Помилка Axios:', error);
-  });
-
-
-// Перевірка спінера
-const spinner = document.querySelector('.loader');
-if (spinner) {
-  console.log('Spinner працює ✅');
-} else {
-  console.log('Spinner не знайдено ❌');
-}
-
-// Перевірка iziToast
-try {
-  iziToast.success({ title: 'Test', message: 'iziToast працює (консольно тест) 👍', timeout: 1 });
-  console.log('iziToast підключено ✅');
-} catch (error) {
-  console.log('iziToast не підключено ❌', error);
-}
